@@ -7,4 +7,14 @@ layout:
 - go.kubebuilder.io/v4
 projectName: mri-keycloak
 repo: appdat.jsc.nasa.gov/platform/controllers/mri-keycloak
+resources:
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: appdat.io
+  group: appdat
+  kind: Keycloak
+  path: appdat.jsc.nasa.gov/platform/controllers/mri-keycloak/api/v1alpha1
+  version: v1alpha1
 version: "3"

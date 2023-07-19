@@ -1,0 +1,12 @@
+apiVersion: appdat.appdat.io/v1alpha1
+kind: Keycloak
+metadata:
+  labels:
+    app.kubernetes.io/name: keycloak
+    app.kubernetes.io/instance: keycloak-sample
+    app.kubernetes.io/part-of: mri-keycloak
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: mri-keycloak
+  name: keycloak-sample
+spec:
+  # TODO(user): Add fields here

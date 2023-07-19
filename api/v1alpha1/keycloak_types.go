@@ -20,22 +20,41 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
-// NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
+type KeycloakUser struct {
+	Name   string          `json:"name"`
+	Email  string          `json:"email"`
+	Uupic  string          `json:"uupic"`
+	Groups []KeycloakGroup `json:"groups"`
+	Roles  []KeycloakRole  `json:"roles"`
+}
+
+type KeycloakGroup struct {
+	Name string `json:"name"`
+}
+
+type KeycloakRole struct {
+	Name string `json:"name"`
+}
+
+type IdentityProviderRoleMapper struct {
+	Provider string `json:"provider"`
+	Role     string `json:"role"`
+}
 
 // KeycloakSpec defines the desired state of Keycloak
 type KeycloakSpec struct {
-	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
-
-	// Foo is an example field of Keycloak. Edit keycloak_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
+	RealmName                   string                       `json:"realmName"`
+	Users                       []KeycloakUser               `json:"users"`
+	Groups                      []KeycloakGroup              `json:"groups"`
+	Roles                       []KeycloakRole               `json:"roles"`
+	IdentityProviderRoleMappers []IdentityProviderRoleMapper `json:"identityProviderRoleMappers"`
 }
 
 // KeycloakStatus defines the observed state of Keycloak
 type KeycloakStatus struct {
-	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
+	Created                     bool                         `json:"created"`
+	RealmName                   string                       `json:"realmName"`
+	IdentityProviderRoleMappers []IdentityProviderRoleMapper `json:"identityProviderRoleMappers"`
 }
 
 //+kubebuilder:object:root=true

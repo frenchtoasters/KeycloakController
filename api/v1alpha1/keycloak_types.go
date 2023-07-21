@@ -20,12 +20,26 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+const (
+	// PausedAnnotation is an annotation that can be applied to any MriKeycloak
+	// object to prevent a controller from processing a resource.
+	//
+	// Controllers working with MriKeycloak API objects must check the existence of this annotation
+	// on the reconciled object.
+	PausedAnnotation = "mrikeycloak.x-k8s.io/paused"
+
+	// KeycloakFinalizer is the finalizer used by the cluster controller to
+	// cleanup the cluster resources when a Keycloak is being deleted.
+	KeycloakFinalizer = "keycloak.mrikeycloak.x-k8s.io"
+)
+
 type KeycloakUser struct {
-	Name   string          `json:"name"`
-	Email  string          `json:"email"`
-	Uupic  string          `json:"uupic"`
-	Groups []KeycloakGroup `json:"groups"`
-	Roles  []KeycloakRole  `json:"roles"`
+	FristName string          `json:"firstName"`
+	LastName  string          `json:"lastName"`
+	Email     string          `json:"email"`
+	Uupic     string          `json:"uupic"`
+	Groups    []KeycloakGroup `json:"groups"`
+	Roles     []KeycloakRole  `json:"roles"`
 }
 
 type KeycloakGroup struct {
@@ -48,6 +62,7 @@ type KeycloakSpec struct {
 	Groups                      []KeycloakGroup              `json:"groups"`
 	Roles                       []KeycloakRole               `json:"roles"`
 	IdentityProviderRoleMappers []IdentityProviderRoleMapper `json:"identityProviderRoleMappers"`
+	Paused                      bool                         `json:"paused"`
 }
 
 // KeycloakStatus defines the observed state of Keycloak

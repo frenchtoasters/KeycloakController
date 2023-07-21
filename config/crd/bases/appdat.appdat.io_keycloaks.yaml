@@ -55,6 +55,8 @@ spec:
                   - role
                   type: object
                 type: array
+              paused:
+                type: boolean
               realmName:
                 type: string
               roles:
@@ -71,6 +73,8 @@ spec:
                   properties:
                     email:
                       type: string
+                    firstName:
+                      type: string
                     groups:
                       items:
                         properties:
@@ -80,7 +84,7 @@ spec:
                         - name
                         type: object
                       type: array
-                    name:
+                    lastName:
                       type: string
                     roles:
                       items:
@@ -95,8 +99,9 @@ spec:
                       type: string
                   required:
                   - email
+                  - firstName
                   - groups
-                  - name
+                  - lastName
                   - roles
                   - uupic
                   type: object
@@ -104,6 +109,7 @@ spec:
             required:
             - groups
             - identityProviderRoleMappers
+            - paused
             - realmName
             - roles
             - users

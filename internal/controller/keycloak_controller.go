@@ -29,7 +29,9 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
 	appdatv1alpha1 "appdat.jsc.nasa.gov/platform/controllers/mri-keycloak/api/v1alpha1"
+	"appdat.jsc.nasa.gov/platform/controllers/mri-keycloak/cloud"
 	"appdat.jsc.nasa.gov/platform/controllers/mri-keycloak/cloud/scope"
+	"appdat.jsc.nasa.gov/platform/controllers/mri-keycloak/cloud/services/keycloak/realms"
 )
 
 // KeycloakReconciler reconciles a Keycloak object
@@ -102,6 +104,10 @@ func (r *KeycloakReconciler) reconcile(ctx context.Context, keycloakScope *scope
 	controllerutil.AddFinalizer(keycloakScope.Keycloak, appdatv1alpha1.KeycloakFinalizer)
 	if err := keycloakScope.PatchObject(); err != nil {
 		return ctrl.Result{}, err
+	}
+
+	reconcilers := []cloud.Reconciler{
+		realms.New(keycloakScope),
 	}
 
 	return ctrl.Result{}, nil

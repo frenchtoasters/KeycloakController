@@ -53,3 +53,23 @@ func (s *KeycloakScope) PatchObject() error {
 func (s *KeycloakScope) Close() error {
 	return s.PatchObject()
 }
+
+func (s *KeycloakScope) Groups() []appdatv1alpha1.KeycloakGroup {
+	return s.Keycloak.Spec.Groups
+}
+
+func (s *KeycloakScope) IdentityProviderRoleMapper() []appdatv1alpha1.IdentityProviderRoleMapper {
+	return s.Keycloak.Spec.IdentityProviderRoleMappers
+}
+
+func (s *KeycloakScope) Users() []appdatv1alpha1.KeycloakUser {
+	return s.Keycloak.Spec.Users
+}
+
+func (s *KeycloakScope) RealmName() string {
+	return s.Keycloak.Spec.RealmName
+}
+
+func (s *KeycloakScope) Namespace() string {
+	return s.Keycloak.Namespace
+}

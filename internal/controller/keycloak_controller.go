@@ -23,6 +23,7 @@ import (
 	"github.com/pkg/errors"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
+	"sigs.k8s.io/cluster-api/util/record"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
@@ -107,7 +108,15 @@ func (r *KeycloakReconciler) reconcile(ctx context.Context, keycloakScope *scope
 	}
 
 	reconcilers := []cloud.Reconciler{
-		realms.New(keycloakScope),
+		realms.New(*keycloakScope),
+	}
+
+	for _, r := range reconcilers {
+		if err := r.Reconcile(ctx); err != nil {
+			log.Error(err, "Reconcile error")
+			record.Warnf(keycloakScope.Keycloak, "MriKeycloakReconcile", "Reconcile error - %v", err)
+			return ctrl.Result{}, err
+		}
 	}
 
 	return ctrl.Result{}, nil

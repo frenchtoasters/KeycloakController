@@ -26,6 +26,10 @@ type Client interface {
 	Keycloak() KeycloakApi
 }
 
+type Keycloak interface {
+	KeycloakGetter
+}
+
 // KeycloakGetter is an interface which can get cluster information.
 type KeycloakGetter interface {
 	Client

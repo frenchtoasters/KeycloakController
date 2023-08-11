@@ -73,3 +73,7 @@ func (s *KeycloakScope) RealmName() string {
 func (s *KeycloakScope) Namespace() string {
 	return s.Keycloak.Namespace
 }
+
+func (s *KeycloakScope) Realms() string {
+	return s.Keycloak.Spec.RealmName
+}

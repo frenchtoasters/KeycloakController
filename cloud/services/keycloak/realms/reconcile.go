@@ -9,10 +9,7 @@ import (
 func (s *Service) Reconcile(ctx context.Context) error {
 	log := log.FromContext(ctx)
 	log.Info("Reconciling realm resources")
-	_, _, err := s.realms.Get(ctx, s.scope.RealmName())
-	if err != nil {
-		log.Info("Realm does not yet exist")
-	}
+	log.Info("Realm Name - %s", s.scope.Realms())
 	return nil
 
 }

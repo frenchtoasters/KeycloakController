@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"appdat.jsc.nasa.gov/platform/controllers/mri-keycloak/cloud"
+	"appdat.jsc.nasa.gov/platform/controllers/mri-keycloak/cloud/scope"
 	gokeycloak "github.com/Nerzal/gocloak/v13"
 )
 
@@ -12,20 +13,20 @@ type realmInterface interface {
 }
 
 type Scope interface {
-	cloud.KeycloakGetter
+	cloud.Keycloak
 }
 
 type Service struct {
-	scope  Scope
-	realms realmInterface
+	scope scope.KeycloakScope
+	realm string
 }
 
 var _ cloud.Reconciler = &Service{}
 
 // New returns Service from given scope.
-func New(scope Scope) *Service {
+func New(scope scope.KeycloakScope) *Service {
 	return &Service{
-		scope:  scope,
-		realms: scope.Keycloak().Realms(),
+		scope: scope,
+		realm: scope.Keycloak.Spec.RealmName,
 	}
 }

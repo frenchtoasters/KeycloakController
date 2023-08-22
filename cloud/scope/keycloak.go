@@ -3,6 +3,8 @@ package scope
 import (
 	"context"
 
+	gokeycloak "github.com/Nerzal/gocloak/v13"
+
 	appdatv1alpha1 "appdat.jsc.nasa.gov/platform/controllers/mri-keycloak/api/v1alpha1"
 	"github.com/pkg/errors"
 	"sigs.k8s.io/cluster-api/util/patch"
@@ -10,8 +12,12 @@ import (
 )
 
 type KeycloakScopeParams struct {
-	Client   client.Client
-	Keycloak *appdatv1alpha1.Keycloak
+	Client              client.Client
+	Keycloak            *appdatv1alpha1.Keycloak
+	KeycloakInstanceUrl string
+	KeycloakAdminUser   string
+	KeycloakAdminPass   string
+	KeycloakRealmName   string
 }
 
 // NewKeycloakScope creates a new Scope from the supplied parameters.
@@ -29,17 +35,27 @@ func NewKeycloakScope(ctx context.Context, params KeycloakScopeParams) (*Keycloa
 		return nil, errors.Wrap(err, "failed to init patch helper")
 	}
 
+	client := gokeycloak.NewClient(params.KeycloakInstanceUrl)
+	token, err := client.LoginAdmin(ctx, params.KeycloakAdminUser, params.KeycloakAdminPass, params.KeycloakRealmName)
+	if err != nil {
+		return nil, errors.Wrapf(err, "failed to create admin token")
+	}
+
 	return &KeycloakScope{
-		client:      params.Client,
-		Keycloak:    params.Keycloak,
-		patchHelper: helper,
+		client:         params.Client,
+		patchHelper:    helper,
+		KeycloakToken:  token,
+		KeycloakClient: client,
+		Keycloak:       params.Keycloak,
 	}, nil
 }
 
 // KeycloakScope defines the basic context for an actuator to operate upon.
 type KeycloakScope struct {
-	client      client.Client
-	patchHelper *patch.Helper
+	client         client.Client
+	patchHelper    *patch.Helper
+	KeycloakToken  *gokeycloak.JWT
+	KeycloakClient *gokeycloak.GoCloak
 
 	Keycloak *appdatv1alpha1.Keycloak
 }
@@ -54,16 +70,20 @@ func (s *KeycloakScope) Close() error {
 	return s.PatchObject()
 }
 
-func (s *KeycloakScope) Groups() []appdatv1alpha1.KeycloakGroup {
+func (s *KeycloakScope) Groups() []*gokeycloak.Group {
 	return s.Keycloak.Spec.Groups
 }
 
-func (s *KeycloakScope) IdentityProviderRoleMapper() []appdatv1alpha1.IdentityProviderRoleMapper {
+func (s *KeycloakScope) IdentityProviderRoleMapper() []*gokeycloak.IdentityProviderMapper {
 	return s.Keycloak.Spec.IdentityProviderRoleMappers
 }
 
-func (s *KeycloakScope) Users() []appdatv1alpha1.KeycloakUser {
+func (s *KeycloakScope) Users() []*gokeycloak.User {
 	return s.Keycloak.Spec.Users
+}
+
+func (s *KeycloakScope) User(i int) *gokeycloak.User {
+	return s.Keycloak.Spec.Users[i]
 }
 
 func (s *KeycloakScope) RealmName() string {
@@ -76,4 +96,8 @@ func (s *KeycloakScope) Namespace() string {
 
 func (s *KeycloakScope) Realms() string {
 	return s.Keycloak.Spec.RealmName
+}
+
+func (s *KeycloakScope) Token() string {
+	return s.KeycloakToken.AccessToken
 }

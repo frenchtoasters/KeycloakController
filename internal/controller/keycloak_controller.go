@@ -18,6 +18,7 @@ package controller
 
 import (
 	"context"
+	"os"
 	"time"
 
 	"github.com/pkg/errors"
@@ -78,8 +79,12 @@ func (r *KeycloakReconciler) Reconcile(ctx context.Context, req ctrl.Request) (_
 	}
 
 	keycloakScope, err := scope.NewKeycloakScope(ctx, scope.KeycloakScopeParams{
-		Client:   r.Client,
-		Keycloak: appdatKeycloak,
+		Client:              r.Client,
+		Keycloak:            appdatKeycloak,
+		KeycloakInstanceUrl: r.KeycloakUrl,
+		KeycloakAdminUser:   os.Getenv("KEYCLOAK_ADMIN_USER"),
+		KeycloakAdminPass:   os.Getenv("KEYCLOAK_ADMIN_PASS"),
+		KeycloakRealmName:   appdatKeycloak.Spec.RealmName,
 	})
 	if err != nil {
 		return ctrl.Result{}, errors.Errorf("failed to create scope: %+v", err)
@@ -114,7 +119,7 @@ func (r *KeycloakReconciler) reconcile(ctx context.Context, keycloakScope *scope
 	for _, r := range reconcilers {
 		if err := r.Reconcile(ctx); err != nil {
 			log.Error(err, "Reconcile error")
-			record.Warnf(keycloakScope.Keycloak, "MriKeycloakReconcile", "Reconcile error - %v", err)
+			record.Warnf(keycloakScope.Keycloak, "KeycloakReconcile", "Reconcile error - %v", err)
 			return ctrl.Result{}, err
 		}
 	}

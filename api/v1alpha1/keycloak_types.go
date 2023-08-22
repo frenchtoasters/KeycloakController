@@ -17,6 +17,7 @@ limitations under the License.
 package v1alpha1
 
 import (
+	gokeycloak "github.com/Nerzal/gocloak/v13"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -34,42 +35,57 @@ const (
 )
 
 type KeycloakUser struct {
-	FristName string          `json:"firstName"`
-	LastName  string          `json:"lastName"`
-	Email     string          `json:"email"`
-	Uupic     string          `json:"uupic"`
-	Groups    []KeycloakGroup `json:"groups"`
-	Roles     []KeycloakRole  `json:"roles"`
+	ID               *string              `json:"id,omitempty"`
+	CreatedTimestamp *int64               `json:"createdTimestamp,omitempty"`
+	Username         *string              `json:"username,omitempty"`
+	Enabled          *bool                `json:"enabled,omitempty"`
+	Totp             *bool                `json:"totp,omitempty"`
+	EmailVerified    *bool                `json:"emailVerified,omitempty"`
+	FirstName        *string              `json:"firstName,omitempty"`
+	LastName         *string              `json:"lastName,omitempty"`
+	Email            *string              `json:"email,omitempty"`
+	FederationLink   *string              `json:"federationLink,omitempty"`
+	Attributes       *map[string][]string `json:"attributes,omitempty"`
+	// Currently cannot be used with controller-gen because of the []interface{}
+	// DisableableCredentialTypes *[]interface{}              `json:"disableableCredentialTypes,omitempty"`
+	RequiredActions        *[]string                   `json:"requiredActions,omitempty"`
+	Access                 *map[string]bool            `json:"access,omitempty"`
+	ClientRoles            *map[string][]string        `json:"clientRoles,omitempty"`
+	RealmRoles             *[]string                   `json:"realmRoles,omitempty"`
+	Groups                 *[]string                   `json:"groups,omitempty"`
+	ServiceAccountClientID *string                     `json:"serviceAccountClientId,omitempty"`
+	Credentials            *[]CredentialRepresentation `json:"credentials,omitempty"`
 }
 
-type KeycloakGroup struct {
-	Name string `json:"name"`
-}
-
-type KeycloakRole struct {
-	Name string `json:"name"`
-}
-
-type IdentityProviderRoleMapper struct {
-	Provider string `json:"provider"`
-	Role     string `json:"role"`
+// CredentialRepresentation is a representations of the credentials
+// https://www.keycloak.org/docs-api/22.0.1/rest-api/index.html#CredentialRepresentation
+type CredentialRepresentation struct {
+	CreatedDate    *int64  `json:"createdDate,omitempty"`
+	Temporary      *bool   `json:"temporary,omitempty"`
+	Type           *string `json:"type,omitempty"`
+	Value          *string `json:"value,omitempty"`
+	CredentialData *string `json:"credentialData,omitempty"`
+	ID             *string `json:"id,omitempty"`
+	Priority       *int32  `json:"priority,omitempty"`
+	SecretData     *string `json:"secretData,omitempty"`
+	UserLabel      *string `json:"userLabel,omitempty"`
 }
 
 // KeycloakSpec defines the desired state of Keycloak
 type KeycloakSpec struct {
-	RealmName                   string                       `json:"realmName"`
-	Users                       []KeycloakUser               `json:"users"`
-	Groups                      []KeycloakGroup              `json:"groups"`
-	Roles                       []KeycloakRole               `json:"roles"`
-	IdentityProviderRoleMappers []IdentityProviderRoleMapper `json:"identityProviderRoleMappers"`
-	Paused                      bool                         `json:"paused"`
+	RealmName                   string                               `json:"realmName"`
+	Users                       []*KeycloakUser                      `json:"users"`
+	Groups                      []*gokeycloak.Group                  `json:"groups"`
+	Roles                       []*gokeycloak.Role                   `json:"roles"`
+	IdentityProviderRoleMappers []*gokeycloak.IdentityProviderMapper `json:"identityProviderRoleMappers"`
+	Paused                      bool                                 `json:"paused"`
 }
 
 // KeycloakStatus defines the observed state of Keycloak
 type KeycloakStatus struct {
-	Created                     bool                         `json:"created"`
-	RealmName                   string                       `json:"realmName"`
-	IdentityProviderRoleMappers []IdentityProviderRoleMapper `json:"identityProviderRoleMappers"`
+	Created                     bool                                 `json:"created"`
+	RealmName                   string                               `json:"realmName"`
+	IdentityProviderRoleMappers []*gokeycloak.IdentityProviderMapper `json:"identityProviderRoleMappers"`
 }
 
 //+kubebuilder:object:root=true

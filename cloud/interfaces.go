@@ -3,7 +3,8 @@ package cloud
 import (
 	"context"
 
-	appdatv1alpha1 "appdat.jsc.nasa.gov/platform/controllers/mri-keycloak/api/v1alpha1"
+	gokeycloak "github.com/Nerzal/gocloak/v13"
+
 	ctrl "sigs.k8s.io/controller-runtime"
 )
 
@@ -35,11 +36,7 @@ type KeycloakGetter interface {
 	Client
 	RealmName() string
 	Namespace() string
-	Users() []appdatv1alpha1.KeycloakUser
-	Groups() []appdatv1alpha1.KeycloakGroup
-	IdentityProviderRoleMapper() []appdatv1alpha1.IdentityProviderRoleMapper
-}
-
-type Keycloak interface {
-	KeycloakGetter
+	Users() []*gokeycloak.User
+	Groups() []*gokeycloak.Group
+	IdentityProviderRoleMapper() []gokeycloak.IdentityProviderMapper
 }

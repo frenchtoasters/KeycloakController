@@ -1,0 +1,17 @@
+{
+  "name": "mri",
+  "config": {
+    "image": "keycloak-manager",
+    "live_reload_deps": [
+      "main.go",
+      "go.mod",
+      "go.sum",
+      "api",
+      "cloud",
+      "internal",
+      "cmd",
+	  "config",
+	  "util"
+    ]
+  }
+}

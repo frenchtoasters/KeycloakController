@@ -1,9 +1,9 @@
 package users
 
 import (
+	appdatv1alpha1 "appdat.jsc.nasa.gov/platform/controllers/mri-keycloak/api/v1alpha1"
 	"appdat.jsc.nasa.gov/platform/controllers/mri-keycloak/cloud"
 	"appdat.jsc.nasa.gov/platform/controllers/mri-keycloak/cloud/scope"
-	gokeycloak "github.com/Nerzal/gocloak/v13"
 )
 
 type Scope interface {
@@ -12,7 +12,7 @@ type Scope interface {
 
 type Service struct {
 	scope scope.KeycloakScope
-	users []*gokeycloak.User
+	users []*appdatv1alpha1.User
 }
 
 var _ cloud.Reconciler = &Service{}

@@ -70,19 +70,19 @@ func (s *KeycloakScope) Close() error {
 	return s.PatchObject()
 }
 
-func (s *KeycloakScope) Groups() []*gokeycloak.Group {
+func (s *KeycloakScope) Groups() []*appdatv1alpha1.Group {
 	return s.Keycloak.Spec.Groups
 }
 
-func (s *KeycloakScope) IdentityProviderRoleMapper() []*gokeycloak.IdentityProviderMapper {
+func (s *KeycloakScope) IdentityProviderRoleMapper() []*appdatv1alpha1.IdentityProviderMapper {
 	return s.Keycloak.Spec.IdentityProviderRoleMappers
 }
 
-func (s *KeycloakScope) Users() []*gokeycloak.User {
+func (s *KeycloakScope) Users() []*appdatv1alpha1.User {
 	return s.Keycloak.Spec.Users
 }
 
-func (s *KeycloakScope) User(i int) *gokeycloak.User {
+func (s *KeycloakScope) User(i int) *appdatv1alpha1.User {
 	return s.Keycloak.Spec.Users[i]
 }
 
@@ -91,7 +91,7 @@ func (s *KeycloakScope) RealmName() string {
 }
 
 func (s *KeycloakScope) Namespace() string {
-	return s.Keycloak.Namespace
+	return s.Keycloak.ObjectMeta.Namespace
 }
 
 func (s *KeycloakScope) Realms() string {

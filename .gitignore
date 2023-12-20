@@ -23,3 +23,9 @@ Dockerfile.cross
 *.swp
 *.swo
 *~
+
+# Tilt files.
+.tiltbuild
+/tilt.d
+tilt-settings.json
+tilt_config.json

@@ -3,6 +3,7 @@ package users
 import (
 	"context"
 
+	"appdat.jsc.nasa.gov/platform/controllers/mri-keycloak/cloud/services/keycloak/utils"
 	gokeycloak "github.com/Nerzal/gocloak/v13"
 
 	"sigs.k8s.io/controller-runtime/pkg/log"
@@ -20,7 +21,7 @@ func (s *Service) Reconcile(ctx context.Context) error {
 			// TODO: Check that error is recoverable here
 			log.Info("Unable to find user - %s", s.users[i].Username)
 			log.Info("Creating user - %s", s.users[i].Username)
-			userId, err := s.scope.KeycloakClient.CreateUser(ctx, s.scope.Token(), s.scope.RealmName(), *s.users[i])
+			userId, err := s.scope.KeycloakClient.CreateUser(ctx, s.scope.Token(), s.scope.RealmName(), utils.UserTransform(s.users[i]))
 			if err != nil {
 				log.Info("Unable to create user - %v", err)
 			}

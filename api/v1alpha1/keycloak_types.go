@@ -17,7 +17,6 @@ limitations under the License.
 package v1alpha1
 
 import (
-	gokeycloak "github.com/Nerzal/gocloak/v13"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -34,7 +33,7 @@ const (
 	KeycloakFinalizer = "keycloak.mrikeycloak.x-k8s.io"
 )
 
-type KeycloakUser struct {
+type User struct {
 	ID               *string              `json:"id,omitempty"`
 	CreatedTimestamp *int64               `json:"createdTimestamp,omitempty"`
 	Username         *string              `json:"username,omitempty"`
@@ -71,21 +70,64 @@ type CredentialRepresentation struct {
 	UserLabel      *string `json:"userLabel,omitempty"`
 }
 
+// Group is a Group
+type Group struct {
+	ID          *string              `json:"id,omitempty"`
+	Type        *string              `json:"type,omitempty"`
+	Name        *string              `json:"name,omitempty"`
+	Path        *string              `json:"path,omitempty"`
+	Attributes  *map[string][]string `json:"attributes,omitempty"`
+	Access      *map[string]bool     `json:"access,omitempty"`
+	ClientRoles *map[string][]string `json:"clientRoles,omitempty"`
+	RealmRoles  *[]string            `json:"realmRoles,omitempty"`
+}
+
+// CompositesRepresentation represents the composite roles of a role
+type CompositesRepresentation struct {
+	Client *map[string][]string `json:"client,omitempty"`
+	Realm  *[]string            `json:"realm,omitempty"`
+}
+
+// Role is a role
+type Role struct {
+	ID                 *string                   `json:"id,omitempty"`
+	Name               *string                   `json:"name,omitempty"`
+	ScopeParamRequired *bool                     `json:"scopeParamRequired,omitempty"`
+	Composite          *bool                     `json:"composite,omitempty"`
+	Composites         *CompositesRepresentation `json:"composites,omitempty"`
+	ClientRole         *bool                     `json:"clientRole,omitempty"`
+	ContainerID        *string                   `json:"containerId,omitempty"`
+	Description        *string                   `json:"description,omitempty"`
+	Attributes         *map[string][]string      `json:"attributes,omitempty"`
+}
+
+// IdentityProviderMapper represents the body of a call to add a mapper to
+// an identity provider
+type IdentityProviderMapper struct {
+	ID                     *string            `json:"id,omitempty"`
+	Name                   *string            `json:"name,omitempty"`
+	IdentityProviderMapper *string            `json:"identityProviderMapper,omitempty"`
+	IdentityProviderAlias  *string            `json:"identityProviderAlias,omitempty"`
+	Config                 *map[string]string `json:"config"`
+}
+
 // KeycloakSpec defines the desired state of Keycloak
 type KeycloakSpec struct {
-	RealmName                   string                               `json:"realmName"`
-	Users                       []*KeycloakUser                      `json:"users"`
-	Groups                      []*gokeycloak.Group                  `json:"groups"`
-	Roles                       []*gokeycloak.Role                   `json:"roles"`
-	IdentityProviderRoleMappers []*gokeycloak.IdentityProviderMapper `json:"identityProviderRoleMappers"`
-	Paused                      bool                                 `json:"paused"`
+	RealmName string  `json:"realmName"`
+	Users     []*User `json:"users"`
+	// TODO:: Convert theese gokeycloak types into local types cause they dont have the deepcopy stuff the generator needs
+	// TODO:: Maybe push the deepcopy stuff upstream
+	Groups                      []*Group                  `json:"groups"`
+	Roles                       []*Role                   `json:"roles"`
+	IdentityProviderRoleMappers []*IdentityProviderMapper `json:"identityProviderRoleMappers"`
+	Paused                      bool                      `json:"paused"`
 }
 
 // KeycloakStatus defines the observed state of Keycloak
 type KeycloakStatus struct {
-	Created                     bool                                 `json:"created"`
-	RealmName                   string                               `json:"realmName"`
-	IdentityProviderRoleMappers []*gokeycloak.IdentityProviderMapper `json:"identityProviderRoleMappers"`
+	Created                     bool                      `json:"created"`
+	RealmName                   string                    `json:"realmName"`
+	IdentityProviderRoleMappers []*IdentityProviderMapper `json:"identityProviderRoleMappers"`
 }
 
 //+kubebuilder:object:root=true

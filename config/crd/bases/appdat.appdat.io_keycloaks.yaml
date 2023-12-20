@@ -35,6 +35,9 @@ spec:
             description: KeycloakSpec defines the desired state of Keycloak
             properties:
               groups:
+                description: 'TODO:: Convert theese gokeycloak types into local types
+                  cause they dont have the deepcopy stuff the generator needs TODO::
+                  Maybe push the deepcopy stuff upstream'
                 items:
                   description: Group is a Group
                   properties:
@@ -64,9 +67,8 @@ spec:
                       items:
                         type: string
                       type: array
-                    subGroups:
-                      items: {}
-                      type: array
+                    type:
+                      type: string
                   type: object
                 type: array
               identityProviderRoleMappers:

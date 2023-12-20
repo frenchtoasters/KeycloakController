@@ -10,3 +10,9 @@ metadata:
   name: keycloak-sample
 spec:
   # TODO(user): Add fields here
+  realmName: "test"
+  groups: []
+  identityProviderRoleMappers: []
+  paused: false
+  roles: []
+  users: []

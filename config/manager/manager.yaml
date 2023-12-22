@@ -71,6 +71,11 @@ spec:
         args:
         - --leader-elect
         image: keycloak-manager:latest
+        env:
+        - name: KEYCLOAK_ADMIN_USER
+          value: "admin"
+        - name: KEYCLOAK_ADMIN_PASS
+          value: "admin"
         name: manager
         securityContext:
           allowPrivilegeEscalation: false

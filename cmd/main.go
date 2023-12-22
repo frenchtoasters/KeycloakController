@@ -61,7 +61,7 @@ func main() {
 	flag.BoolVar(&enableLeaderElection, "leader-elect", false,
 		"Enable leader election for controller manager. "+
 			"Enabling this will ensure there is only one active controller manager.")
-	flag.StringVar(&keycloakUrl, "keycloak-url", "keycloak.cluster.local", "The url of the keycloak instance.")
+	flag.StringVar(&keycloakUrl, "keycloak-url", "http://keycloak.default.svc.cluster.local:8080", "The url of the keycloak instance.")
 	opts := zap.Options{
 		Development: true,
 	}

@@ -63,13 +63,13 @@ func (r *KeycloakReconciler) Reconcile(ctx context.Context, req ctrl.Request) (_
 		return ctrl.Result{}, err
 	}
 
-	keycloak, err := GetOwnerKeycloak(ctx, r.Client, appdatKeycloak.ObjectMeta)
+	keycloak, err := GetKeycloakByName(ctx, r.Client, appdatKeycloak.ObjectMeta.Namespace, appdatKeycloak.Name)
 	if err != nil {
-		log.Error(err, "Failed to get owner keycloak")
-		return ctrl.Result{}, err
-	}
-	if keycloak == nil {
-		log.Info("Keycloak Controller has not yet set OwnerRef")
+		if apierrors.IsNotFound(err) {
+			log.Info("AppdatKeycloak resource not found or already deleted")
+			return ctrl.Result{}, nil
+		}
+		log.Error(err, "Failed to get keycloak")
 		return ctrl.Result{}, err
 	}
 

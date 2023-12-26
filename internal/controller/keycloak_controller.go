@@ -130,6 +130,8 @@ func (r *KeycloakReconciler) reconcile(ctx context.Context, keycloakScope *scope
 func (r *KeycloakReconciler) reconcileDelete(ctx context.Context, keycloakScope *scope.KeycloakScope) (ctrl.Result, error) {
 	log := log.FromContext(ctx)
 	log.Info("Reconciling Delete AppdatKeycloak")
+	controllerutil.RemoveFinalizer(keycloakScope.Keycloak, appdatv1alpha1.KeycloakFinalizer)
+	record.Event(keycloakScope.Keycloak, "KeycloakReconcileDelete", "Deleting AppdatKeycloak")
 
 	return ctrl.Result{}, nil
 }

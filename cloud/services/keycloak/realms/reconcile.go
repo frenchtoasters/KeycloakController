@@ -13,7 +13,7 @@ func (s *Service) Reconcile(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	log.Info("Realm Name - %s", realm.DisplayName)
+	log.Info(*realm.DisplayName)
 	return nil
 
 }

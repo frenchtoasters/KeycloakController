@@ -34,6 +34,7 @@ import (
 	"appdat.jsc.nasa.gov/platform/controllers/mri-keycloak/cloud"
 	"appdat.jsc.nasa.gov/platform/controllers/mri-keycloak/cloud/scope"
 	"appdat.jsc.nasa.gov/platform/controllers/mri-keycloak/cloud/services/keycloak/realms"
+	"appdat.jsc.nasa.gov/platform/controllers/mri-keycloak/cloud/services/keycloak/users"
 )
 
 // KeycloakReconciler reconciles a Keycloak object
@@ -114,6 +115,7 @@ func (r *KeycloakReconciler) reconcile(ctx context.Context, keycloakScope *scope
 
 	reconcilers := []cloud.Reconciler{
 		realms.New(*keycloakScope),
+		users.New(*keycloakScope),
 	}
 
 	for _, r := range reconcilers {
@@ -130,8 +132,16 @@ func (r *KeycloakReconciler) reconcile(ctx context.Context, keycloakScope *scope
 func (r *KeycloakReconciler) reconcileDelete(ctx context.Context, keycloakScope *scope.KeycloakScope) (ctrl.Result, error) {
 	log := log.FromContext(ctx)
 	log.Info("Reconciling Delete AppdatKeycloak")
-	controllerutil.RemoveFinalizer(keycloakScope.Keycloak, appdatv1alpha1.KeycloakFinalizer)
+
+	if keycloakScope.Keycloak.Spec.ManagedRealm {
+		realm := realms.New(*keycloakScope)
+		record.Event(keycloakScope.Keycloak, "KeycloakRealmReconcileDelete", "Deleting Realm")
+		if err := realm.Delete(ctx); err != nil {
+			return ctrl.Result{}, err
+		}
+	}
 	record.Event(keycloakScope.Keycloak, "KeycloakReconcileDelete", "Deleting AppdatKeycloak")
+	controllerutil.RemoveFinalizer(keycloakScope.Keycloak, appdatv1alpha1.KeycloakFinalizer)
 
 	return ctrl.Result{}, nil
 }

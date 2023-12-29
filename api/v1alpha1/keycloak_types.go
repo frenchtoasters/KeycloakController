@@ -113,10 +113,9 @@ type IdentityProviderMapper struct {
 
 // KeycloakSpec defines the desired state of Keycloak
 type KeycloakSpec struct {
-	RealmName string  `json:"realmName"`
-	Users     []*User `json:"users"`
-	// TODO:: Convert theese gokeycloak types into local types cause they dont have the deepcopy stuff the generator needs
-	// TODO:: Maybe push the deepcopy stuff upstream
+	RealmName                   string                    `json:"realmName"`
+	ManagedRealm                bool                      `json:"managedRealm"`
+	Users                       []*User                   `json:"users"`
 	Groups                      []*Group                  `json:"groups"`
 	Roles                       []*Role                   `json:"roles"`
 	IdentityProviderRoleMappers []*IdentityProviderMapper `json:"identityProviderRoleMappers"`
@@ -125,9 +124,7 @@ type KeycloakSpec struct {
 
 // KeycloakStatus defines the observed state of Keycloak
 type KeycloakStatus struct {
-	Created                     bool                      `json:"created"`
-	RealmName                   string                    `json:"realmName"`
-	IdentityProviderRoleMappers []*IdentityProviderMapper `json:"identityProviderRoleMappers"`
+	RealmName string `json:"realmName"`
 }
 
 //+kubebuilder:object:root=true

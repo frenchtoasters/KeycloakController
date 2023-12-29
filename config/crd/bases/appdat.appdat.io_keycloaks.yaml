@@ -35,9 +35,6 @@ spec:
             description: KeycloakSpec defines the desired state of Keycloak
             properties:
               groups:
-                description: 'TODO:: Convert theese gokeycloak types into local types
-                  cause they dont have the deepcopy stuff the generator needs TODO::
-                  Maybe push the deepcopy stuff upstream'
                 items:
                   description: Group is a Group
                   properties:
@@ -92,6 +89,8 @@ spec:
                   - config
                   type: object
                 type: array
+              managedRealm:
+                type: boolean
               paused:
                 type: boolean
               realmName:
@@ -225,6 +224,7 @@ spec:
             required:
             - groups
             - identityProviderRoleMappers
+            - managedRealm
             - paused
             - realmName
             - roles
@@ -233,34 +233,9 @@ spec:
           status:
             description: KeycloakStatus defines the observed state of Keycloak
             properties:
-              created:
-                type: boolean
-              identityProviderRoleMappers:
-                items:
-                  description: IdentityProviderMapper represents the body of a call
-                    to add a mapper to an identity provider
-                  properties:
-                    config:
-                      additionalProperties:
-                        type: string
-                      type: object
-                    id:
-                      type: string
-                    identityProviderAlias:
-                      type: string
-                    identityProviderMapper:
-                      type: string
-                    name:
-                      type: string
-                  required:
-                  - config
-                  type: object
-                type: array
               realmName:
                 type: string
             required:
-            - created
-            - identityProviderRoleMappers
             - realmName
             type: object
         type: object

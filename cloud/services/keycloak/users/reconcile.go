@@ -2,6 +2,7 @@ package users
 
 import (
 	"context"
+	"fmt"
 
 	"appdat.jsc.nasa.gov/platform/controllers/mri-keycloak/cloud/services/keycloak/utils"
 	gokeycloak "github.com/Nerzal/gocloak/v13"
@@ -17,18 +18,20 @@ func (s *Service) Reconcile(ctx context.Context) error {
 			Username: s.users[i].Username,
 		}
 		user, err := s.scope.KeycloakClient.GetUsers(ctx, s.scope.Token(), s.scope.RealmName(), *params)
-		if err != nil {
-			// TODO: Check that error is recoverable here
-			log.Info("Unable to find user - %s", s.users[i].Username)
-			log.Info("Creating user - %s", s.users[i].Username)
+		if len(user) != 1 {
+			log.Info("Reconciling users")
 			userId, err := s.scope.KeycloakClient.CreateUser(ctx, s.scope.Token(), s.scope.RealmName(), utils.UserTransform(s.users[i]))
 			if err != nil {
-				log.Info("Unable to create user - %v", err)
+				log.Info("Unable to create user", "error", err)
+				return err
 			}
-			log.Info("Created user[%s] - %s", s.users[i].Username, userId)
+			log.Info(fmt.Sprintf("Created user - [%s]", userId))
 			continue
 		}
-		log.Info("Found user - %v", user)
+		if err != nil {
+			return err
+		}
+		log.Info(fmt.Sprintf("Found user - [%s]", *user[0].Username))
 	}
 	return nil
 
@@ -37,12 +40,13 @@ func (s *Service) Reconcile(ctx context.Context) error {
 func (s *Service) Delete(ctx context.Context) error {
 	log := log.FromContext(ctx)
 	log.Info("Deleting user resources")
+	// TODO:: Figure out how to handle deleting specific users from a list
 	for i := range s.users {
 		err := s.scope.KeycloakClient.DeleteUser(ctx, s.scope.Token(), s.scope.RealmName(), *s.users[i].ID)
 		if err != nil {
-			log.Info("Unable to delete user - %s", err)
+			log.Info("Unable to delete user", "error", err)
 		}
-		log.Info("Deleted user - %s", s.users[i].Username)
+		log.Info("Deleted user", "user", s.users[i].Username)
 	}
 
 	return nil

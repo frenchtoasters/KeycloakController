@@ -25,16 +25,18 @@ func UserTransform(user *appdatv1alpha1.User) gocloak.User {
 	gocloakUser.CreatedTimestamp = user.CreatedTimestamp
 	gocloakUser.ServiceAccountClientID = user.ServiceAccountClientID
 
-	for i := 0; i < len(*user.Credentials); i++ {
-		(*gocloakUser.Credentials)[i].CreatedDate = (*user.Credentials)[i].CreatedDate
-		(*gocloakUser.Credentials)[i].Temporary = (*user.Credentials)[i].Temporary
-		(*gocloakUser.Credentials)[i].Type = (*user.Credentials)[i].Type
-		(*gocloakUser.Credentials)[i].Value = (*user.Credentials)[i].Value
-		(*gocloakUser.Credentials)[i].CredentialData = (*user.Credentials)[i].CredentialData
-		(*gocloakUser.Credentials)[i].ID = (*user.Credentials)[i].ID
-		(*gocloakUser.Credentials)[i].Priority = (*user.Credentials)[i].Priority
-		(*gocloakUser.Credentials)[i].SecretData = (*user.Credentials)[i].SecretData
-		(*gocloakUser.Credentials)[i].UserLabel = (*user.Credentials)[i].UserLabel
-	}
+	// if *user.Credentials != nil {
+	// 	for i := 0; i < len(*user.Credentials); i++ {
+	// 		(*gocloakUser.Credentials)[i].CreatedDate = (*user.Credentials)[i].CreatedDate
+	// 		(*gocloakUser.Credentials)[i].Temporary = (*user.Credentials)[i].Temporary
+	// 		(*gocloakUser.Credentials)[i].Type = (*user.Credentials)[i].Type
+	// 		(*gocloakUser.Credentials)[i].Value = (*user.Credentials)[i].Value
+	// 		(*gocloakUser.Credentials)[i].CredentialData = (*user.Credentials)[i].CredentialData
+	// 		(*gocloakUser.Credentials)[i].ID = (*user.Credentials)[i].ID
+	// 		(*gocloakUser.Credentials)[i].Priority = (*user.Credentials)[i].Priority
+	// 		(*gocloakUser.Credentials)[i].SecretData = (*user.Credentials)[i].SecretData
+	// 		(*gocloakUser.Credentials)[i].UserLabel = (*user.Credentials)[i].UserLabel
+	// 	}
+	// }
 	return *gocloakUser
 }

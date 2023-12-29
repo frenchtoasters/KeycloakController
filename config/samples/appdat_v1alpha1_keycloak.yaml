@@ -9,10 +9,13 @@ metadata:
     app.kubernetes.io/created-by: mri-keycloak
   name: keycloak-sample
 spec:
-  # TODO(user): Add fields here
-  realmName: "master"
+  realmName: "test"
+  # Required field
+  managedRealm: true
   groups: []
   identityProviderRoleMappers: []
   paused: false
   roles: []
-  users: []
+  users:
+    - id: "test"
+      username: "test-user"

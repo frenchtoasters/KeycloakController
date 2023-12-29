@@ -36,7 +36,7 @@ func NewKeycloakScope(ctx context.Context, params KeycloakScopeParams) (*Keycloa
 	}
 
 	client := gokeycloak.NewClient(params.KeycloakInstanceUrl)
-	token, err := client.LoginAdmin(ctx, params.KeycloakAdminUser, params.KeycloakAdminPass, params.KeycloakRealmName)
+	token, err := client.LoginAdmin(ctx, params.KeycloakAdminUser, params.KeycloakAdminPass, "master")
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to create admin token")
 	}

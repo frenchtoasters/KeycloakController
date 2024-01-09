@@ -40,3 +40,15 @@ func UserTransform(user *appdatv1alpha1.User) gocloak.User {
 	// }
 	return *gocloakUser
 }
+
+func GroupTransform(group *appdatv1alpha1.Group) gocloak.Group {
+	gocloakGroup := &gocloak.Group{}
+	gocloakGroup.Name = group.Name
+	gocloakGroup.Access = group.Access
+	gocloakGroup.Path = group.Path
+	gocloakGroup.Attributes = group.Attributes
+	gocloakGroup.RealmRoles = group.RealmRoles
+	gocloakGroup.ClientRoles = group.ClientRoles
+
+	return *gocloakGroup
+}

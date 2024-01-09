@@ -33,6 +33,7 @@ import (
 	appdatv1alpha1 "appdat.jsc.nasa.gov/platform/controllers/mri-keycloak/api/v1alpha1"
 	"appdat.jsc.nasa.gov/platform/controllers/mri-keycloak/cloud"
 	"appdat.jsc.nasa.gov/platform/controllers/mri-keycloak/cloud/scope"
+	"appdat.jsc.nasa.gov/platform/controllers/mri-keycloak/cloud/services/keycloak/groups"
 	"appdat.jsc.nasa.gov/platform/controllers/mri-keycloak/cloud/services/keycloak/realms"
 	"appdat.jsc.nasa.gov/platform/controllers/mri-keycloak/cloud/services/keycloak/users"
 )
@@ -115,6 +116,7 @@ func (r *KeycloakReconciler) reconcile(ctx context.Context, keycloakScope *scope
 
 	reconcilers := []cloud.Reconciler{
 		realms.New(*keycloakScope),
+		groups.New(*keycloakScope),
 		users.New(*keycloakScope),
 	}
 
@@ -133,14 +135,34 @@ func (r *KeycloakReconciler) reconcileDelete(ctx context.Context, keycloakScope 
 	log := log.FromContext(ctx)
 	log.Info("Reconciling Delete AppdatKeycloak")
 
+	reconcilers := []cloud.Reconciler{}
+
 	if keycloakScope.Keycloak.Spec.ManagedRealm {
-		realm := realms.New(*keycloakScope)
-		record.Event(keycloakScope.Keycloak, "KeycloakRealmReconcileDelete", "Deleting Realm")
-		if err := realm.Delete(ctx); err != nil {
+		// realm := realms.New(*keycloakScope)
+		// record.Event(keycloakScope.Keycloak, "KeycloakRealmReconcileDelete", "Deleting Realm")
+		// if err := realm.Delete(ctx); err != nil {
+		// 	return ctrl.Result{}, err
+		// }
+		reconcilers = append(reconcilers, realms.New(*keycloakScope))
+	}
+
+	if keycloakScope.Keycloak.Spec.Groups != nil {
+		reconcilers = append(reconcilers, groups.New(*keycloakScope))
+	}
+
+	if keycloakScope.Keycloak.Spec.Users != nil {
+		reconcilers = append(reconcilers, users.New(*keycloakScope))
+	}
+
+	for _, r := range reconcilers {
+		if err := r.Delete(ctx); err != nil {
+			log.Error(err, "delete error")
+			record.Warnf(keycloakScope.Keycloak, "KeycloakDelete", "Delete error - %v", err)
 			return ctrl.Result{}, err
 		}
 	}
-	record.Event(keycloakScope.Keycloak, "KeycloakReconcileDelete", "Deleting AppdatKeycloak")
+
+	record.Event(keycloakScope.Keycloak, "KeycloakReconcileDelete", "Removing AppdatKeycloak finalizers")
 	controllerutil.RemoveFinalizer(keycloakScope.Keycloak, appdatv1alpha1.KeycloakFinalizer)
 
 	return ctrl.Result{}, nil

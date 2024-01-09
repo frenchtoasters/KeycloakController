@@ -12,10 +12,12 @@ spec:
   realmName: "test"
   # Required field
   managedRealm: true
-  groups: []
+  groups:
+    - name: test
   identityProviderRoleMappers: []
   paused: false
   roles: []
   users:
-    - id: "test"
-      username: "test-user"
+    - username: "test-user"
+      groups:
+        - test

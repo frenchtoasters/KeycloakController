@@ -157,8 +157,8 @@ func (r *KeycloakReconciler) reconcileDelete(ctx context.Context, keycloakScope 
 		}
 	}
 
-	record.Event(keycloakScope.Keycloak, "KeycloakReconcileDelete", "Removing AppdatKeycloak finalizers")
 	controllerutil.RemoveFinalizer(keycloakScope.Keycloak, appdatv1alpha1.KeycloakFinalizer)
+	record.Event(keycloakScope.Keycloak, "KeycloakReconcileDelete", "Removing AppdatKeycloak finalizers")
 
 	return ctrl.Result{}, nil
 }

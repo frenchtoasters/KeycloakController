@@ -138,11 +138,6 @@ func (r *KeycloakReconciler) reconcileDelete(ctx context.Context, keycloakScope 
 	reconcilers := []cloud.Reconciler{}
 
 	if keycloakScope.Keycloak.Spec.ManagedRealm {
-		// realm := realms.New(*keycloakScope)
-		// record.Event(keycloakScope.Keycloak, "KeycloakRealmReconcileDelete", "Deleting Realm")
-		// if err := realm.Delete(ctx); err != nil {
-		// 	return ctrl.Result{}, err
-		// }
 		reconcilers = append(reconcilers, realms.New(*keycloakScope))
 	}
 

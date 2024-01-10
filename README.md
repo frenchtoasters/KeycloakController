@@ -1,12 +1,27 @@
 # mri-keycloak
-// TODO(user): Add simple overview of use/purpose
+
+This controller is able to manage the following objects in keycloak:
+* Realms
+* Groups
+* Users
 
 ## Description
-// TODO(user): An in-depth paragraph about your project and overview of use
+
+This controller is supposed to be used to manage the lifecycle of keycloak components.
 
 ## Getting Started
 You’ll need a Kubernetes cluster to run against. You can use [KIND](https://sigs.k8s.io/kind) to get a local cluster for testing, or run against a remote cluster.
 **Note:** Your controller will automatically use the current context in your kubeconfig file (i.e. whatever cluster `kubectl cluster-info` shows).
+
+### Testing with tilt
+1. Start your tilt instance
+```sh
+make tilt-up
+```
+2. Apply the sample keycloak config to the cluster
+```sh
+k apply -f config/samples/appdat_v1alpha1_keycloak.yaml
+```
 
 ### Running on the cluster
 1. Install Instances of Custom Resources:

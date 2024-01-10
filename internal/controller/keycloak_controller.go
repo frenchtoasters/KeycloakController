@@ -24,9 +24,11 @@ import (
 	"github.com/pkg/errors"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
+	"sigs.k8s.io/cluster-api/util/predicates"
 	"sigs.k8s.io/cluster-api/util/record"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/controller"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
@@ -44,6 +46,8 @@ type KeycloakReconciler struct {
 	Scheme           *runtime.Scheme
 	KeycloakUrl      string
 	ReconcileTimeout time.Duration
+	WatchFilterValue string
+	ObjectSyncPeriod time.Duration
 }
 
 // +kubebuilder:rbac:groups=appdat.appdat.io,resources=keycloaks,verbs=get;list;watch;create;update;patch;delete
@@ -128,7 +132,7 @@ func (r *KeycloakReconciler) reconcile(ctx context.Context, keycloakScope *scope
 		}
 	}
 
-	return ctrl.Result{}, nil
+	return ctrl.Result{RequeueAfter: r.ObjectSyncPeriod}, nil
 }
 
 func (r *KeycloakReconciler) reconcileDelete(ctx context.Context, keycloakScope *scope.KeycloakScope) (ctrl.Result, error) {
@@ -164,8 +168,16 @@ func (r *KeycloakReconciler) reconcileDelete(ctx context.Context, keycloakScope 
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *KeycloakReconciler) SetupWithManager(mgr ctrl.Manager) error {
-	return ctrl.NewControllerManagedBy(mgr).
+func (r *KeycloakReconciler) SetupWithManager(ctx context.Context, mgr ctrl.Manager, options controller.Options) error {
+	_, err := ctrl.NewControllerManagedBy(mgr).
+		WithOptions(options).
 		For(&appdatv1alpha1.Keycloak{}).
-		Complete(r)
+		WithEventFilter(predicates.ResourceNotPausedAndHasFilterLabel(ctrl.LoggerFrom(ctx), r.WatchFilterValue)).
+		Build(r)
+
+	if err != nil {
+		return errors.Wrap(err, "error creating controller")
+	}
+
+	return nil
 }

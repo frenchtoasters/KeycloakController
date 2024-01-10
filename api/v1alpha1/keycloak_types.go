@@ -124,7 +124,9 @@ type KeycloakSpec struct {
 
 // KeycloakStatus defines the observed state of Keycloak
 type KeycloakStatus struct {
-	RealmName string `json:"realmName"`
+	RealmName  string `json:"realmName"`
+	GroupCount int    `json:"groupCount"`
+	UserCount  int    `json:"userCount"`
 }
 
 //+kubebuilder:object:root=true

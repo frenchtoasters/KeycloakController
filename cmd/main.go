@@ -29,19 +29,22 @@ import (
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
 	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/controller"
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 	"sigs.k8s.io/controller-runtime/pkg/metrics/server"
 
 	appdatv1alpha1 "appdat.jsc.nasa.gov/platform/controllers/mri-keycloak/api/v1alpha1"
-	"appdat.jsc.nasa.gov/platform/controllers/mri-keycloak/internal/controller"
+	appdatv1alpha1controller "appdat.jsc.nasa.gov/platform/controllers/mri-keycloak/internal/controller"
 	//+kubebuilder:scaffold:imports
 )
 
 var (
-	scheme           = runtime.NewScheme()
-	setupLog         = ctrl.Log.WithName("setup")
-	reconcileTimeout = 5 * time.Minute
+	scheme                    = runtime.NewScheme()
+	setupLog                  = ctrl.Log.WithName("setup")
+	syncPeriod                = 5 * time.Minute
+	reconcileTimeout          = 5 * time.Minute
+	appdatKeycloakConcurrency = 10
 )
 
 func init() {
@@ -95,12 +98,16 @@ func main() {
 		os.Exit(1)
 	}
 
-	if err = (&controller.KeycloakReconciler{
+	// Setup the context that's going to be used in controllers and for the manager.
+	ctx := ctrl.SetupSignalHandler()
+
+	if err = (&appdatv1alpha1controller.KeycloakReconciler{
 		Client:           mgr.GetClient(),
 		Scheme:           mgr.GetScheme(),
 		KeycloakUrl:      keycloakUrl,
 		ReconcileTimeout: reconcileTimeout,
-	}).SetupWithManager(mgr); err != nil {
+		ObjectSyncPeriod: syncPeriod,
+	}).SetupWithManager(ctx, mgr, controller.Options{MaxConcurrentReconciles: appdatKeycloakConcurrency}); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Keycloak")
 		os.Exit(1)
 	}
@@ -116,7 +123,7 @@ func main() {
 	}
 
 	setupLog.Info("starting manager")
-	if err := mgr.Start(ctrl.SetupSignalHandler()); err != nil {
+	if err := mgr.Start(ctx); err != nil {
 		setupLog.Error(err, "problem running manager")
 		os.Exit(1)
 	}

@@ -14,6 +14,7 @@ spec:
   managedRealm: true
   groups:
     - name: test
+    - name: test2
   identityProviderRoleMappers: []
   paused: false
   roles: []
@@ -21,3 +22,6 @@ spec:
     - username: "test-user"
       groups:
         - test
+    - username: "test2-user"
+      groups:
+        - test2

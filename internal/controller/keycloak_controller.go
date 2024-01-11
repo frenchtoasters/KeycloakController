@@ -132,7 +132,7 @@ func (r *KeycloakReconciler) reconcile(ctx context.Context, keycloakScope *scope
 		}
 	}
 
-	return ctrl.Result{RequeueAfter: r.ObjectSyncPeriod}, nil
+	return ctrl.Result{}, nil
 }
 
 func (r *KeycloakReconciler) reconcileDelete(ctx context.Context, keycloakScope *scope.KeycloakScope) (ctrl.Result, error) {

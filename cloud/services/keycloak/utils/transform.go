@@ -52,3 +52,17 @@ func GroupTransform(group *appdatv1alpha1.Group) gocloak.Group {
 
 	return *gocloakGroup
 }
+
+func RoleTransform(role *gocloak.Role) *appdatv1alpha1.Role {
+	appdatrole := &appdatv1alpha1.Role{}
+	appdatrole.ID = role.ID
+	appdatrole.ContainerID = role.ContainerID
+	appdatrole.Name = role.Name
+	appdatrole.Composite = role.Composite
+	appdatrole.Composites = (*appdatv1alpha1.CompositesRepresentation)(role.Composites)
+	appdatrole.Description = role.Description
+	appdatrole.Attributes = role.Attributes
+	appdatrole.ClientRole = role.ClientRole
+	appdatrole.ScopeParamRequired = role.ScopeParamRequired
+	return appdatrole
+}

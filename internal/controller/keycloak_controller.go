@@ -36,6 +36,7 @@ import (
 	"appdat.jsc.nasa.gov/platform/controllers/mri-keycloak/cloud"
 	"appdat.jsc.nasa.gov/platform/controllers/mri-keycloak/cloud/scope"
 	"appdat.jsc.nasa.gov/platform/controllers/mri-keycloak/cloud/services/keycloak/groups"
+	"appdat.jsc.nasa.gov/platform/controllers/mri-keycloak/cloud/services/keycloak/realmroles"
 	"appdat.jsc.nasa.gov/platform/controllers/mri-keycloak/cloud/services/keycloak/realms"
 	"appdat.jsc.nasa.gov/platform/controllers/mri-keycloak/cloud/services/keycloak/users"
 )
@@ -122,6 +123,7 @@ func (r *KeycloakReconciler) reconcile(ctx context.Context, keycloakScope *scope
 		realms.New(*keycloakScope),
 		groups.New(*keycloakScope),
 		users.New(*keycloakScope),
+		realmroles.New(*keycloakScope),
 	}
 
 	for _, r := range reconcilers {

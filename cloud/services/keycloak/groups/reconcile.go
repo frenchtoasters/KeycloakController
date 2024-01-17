@@ -15,23 +15,21 @@ const ()
 func (s *Service) Reconcile(ctx context.Context) error {
 	log := log.FromContext(ctx)
 	log.Info("Reconciling group resources")
-	exact := new(bool)
-	*exact = true
+
 	for i := range s.groups {
 		params := &gokeycloak.GetGroupsParams{
-			Exact:  exact,
+			Exact:  gokeycloak.BoolP(true),
 			Search: s.groups[i].Name,
 		}
 		group, err := s.scope.KeycloakClient.GetGroups(ctx, s.scope.Token(), s.scope.RealmName(), *params)
 		if err != nil {
-			return err
+			return fmt.Errorf("error getting groups: %s", err)
 		}
 		if len(group) != 1 {
 			log.Info("Reconciling group")
 			groupId, err := s.scope.KeycloakClient.CreateGroup(ctx, s.scope.Token(), s.scope.RealmName(), utils.GroupTransform(s.groups[i]))
 			if err != nil {
-				log.Info(fmt.Sprintf("Unable to create Group[%s] - %s", *s.groups[i].Name, err))
-				return err
+				return fmt.Errorf("error unable to create group[%s]: %s", *s.groups[i].Name, err)
 			}
 			log.Info(fmt.Sprintf("Created Group - [%s]", groupId))
 			s.groups[i].ID = &groupId
@@ -41,7 +39,7 @@ func (s *Service) Reconcile(ctx context.Context) error {
 
 	realmGroups, err := s.scope.KeycloakClient.GetGroups(ctx, s.scope.Token(), s.scope.RealmName(), gokeycloak.GetGroupsParams{})
 	if err != nil {
-		return err
+		return fmt.Errorf("error getting groups: %s", err)
 	}
 
 	if len(s.groups) != len(realmGroups) {

@@ -34,6 +34,91 @@ spec:
           spec:
             description: KeycloakSpec defines the desired state of Keycloak
             properties:
+              adminUser:
+                items:
+                  properties:
+                    access:
+                      additionalProperties:
+                        type: boolean
+                      type: object
+                    attributes:
+                      additionalProperties:
+                        items:
+                          type: string
+                        type: array
+                      type: object
+                    clientRoles:
+                      additionalProperties:
+                        items:
+                          type: string
+                        type: array
+                      type: object
+                    createdTimestamp:
+                      format: int64
+                      type: integer
+                    credentials:
+                      items:
+                        description: CredentialRepresentation is a representations
+                          of the credentials https://www.keycloak.org/docs-api/22.0.1/rest-api/index.html#CredentialRepresentation
+                        properties:
+                          createdDate:
+                            format: int64
+                            type: integer
+                          credentialData:
+                            type: string
+                          id:
+                            type: string
+                          priority:
+                            format: int32
+                            type: integer
+                          secretData:
+                            type: string
+                          temporary:
+                            type: boolean
+                          type:
+                            type: string
+                          userLabel:
+                            type: string
+                          value:
+                            type: string
+                        type: object
+                      type: array
+                    email:
+                      type: string
+                    emailVerified:
+                      type: boolean
+                    enabled:
+                      type: boolean
+                    federationLink:
+                      type: string
+                    firstName:
+                      type: string
+                    groups:
+                      items:
+                        type: string
+                      type: array
+                    id:
+                      type: string
+                    lastName:
+                      type: string
+                    realmRoles:
+                      items:
+                        type: string
+                      type: array
+                    requiredActions:
+                      description: Currently cannot be used with controller-gen because
+                        of the []interface{} DisableableCredentialTypes *[]interface{}              `json:"disableableCredentialTypes,omitempty"`
+                      items:
+                        type: string
+                      type: array
+                    serviceAccountClientId:
+                      type: string
+                    totp:
+                      type: boolean
+                    username:
+                      type: string
+                  type: object
+                type: array
               groups:
                 items:
                   description: Group is a Group
@@ -222,6 +307,7 @@ spec:
                   type: object
                 type: array
             required:
+            - adminUser
             - groups
             - identityProviderRoleMappers
             - managedRealm

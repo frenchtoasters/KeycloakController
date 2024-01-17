@@ -362,6 +362,17 @@ func (in *KeycloakSpec) DeepCopyInto(out *KeycloakSpec) {
 			}
 		}
 	}
+	if in.AdminUsers != nil {
+		in, out := &in.AdminUsers, &out.AdminUsers
+		*out = make([]*User, len(*in))
+		for i := range *in {
+			if (*in)[i] != nil {
+				in, out := &(*in)[i], &(*out)[i]
+				*out = new(User)
+				(*in).DeepCopyInto(*out)
+			}
+		}
+	}
 	if in.IdentityProviderRoleMappers != nil {
 		in, out := &in.IdentityProviderRoleMappers, &out.IdentityProviderRoleMappers
 		*out = make([]*IdentityProviderMapper, len(*in))

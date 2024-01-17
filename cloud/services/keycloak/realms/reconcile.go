@@ -2,6 +2,7 @@ package realms
 
 import (
 	"context"
+	"fmt"
 
 	"appdat.jsc.nasa.gov/platform/controllers/mri-keycloak/cloud/services/keycloak/utils"
 	gokeycloak "github.com/Nerzal/gocloak/v13"
@@ -18,12 +19,12 @@ func (s *Service) Reconcile(ctx context.Context) error {
 			realmRep := utils.DefaultRealmRep(&s.scope.Keycloak.Spec.RealmName)
 			realm, err := s.scope.KeycloakClient.CreateRealm(ctx, s.scope.Token(), realmRep)
 			if err != nil {
-				return err
+				return fmt.Errorf("error unable to create realm: %s", err)
 			}
 			log.Info("Realm Created", "RealmName", realm)
 			return nil
 		} else {
-			return err
+			return fmt.Errorf("error checking for realm: %s", err)
 		}
 	}
 	s.scope.Keycloak.Status.RealmName = *realm.Realm
@@ -36,7 +37,7 @@ func (s *Service) Delete(ctx context.Context) error {
 	log.Info("Deleting realm")
 	err := s.scope.KeycloakClient.DeleteRealm(ctx, s.scope.Token(), s.scope.RealmName())
 	if err != nil {
-		return err
+		return fmt.Errorf("error deleting realm: %s", err)
 	}
 
 	return nil

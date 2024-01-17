@@ -118,15 +118,15 @@ type KeycloakSpec struct {
 	Users                       []*User                   `json:"users"`
 	Groups                      []*Group                  `json:"groups"`
 	Roles                       []*Role                   `json:"roles"`
+	AdminUsers                  []*User                   `json:"adminUser"`
+	AdminRole                   *Role                     `json:"adminRole"`
 	IdentityProviderRoleMappers []*IdentityProviderMapper `json:"identityProviderRoleMappers"`
 	Paused                      bool                      `json:"paused"`
 }
 
 // KeycloakStatus defines the observed state of Keycloak
 type KeycloakStatus struct {
-	RealmName  string `json:"realmName"`
-	GroupCount int    `json:"groupCount"`
-	UserCount  int    `json:"userCount"`
+	RealmName string `json:"realmName"`
 }
 
 //+kubebuilder:object:root=true

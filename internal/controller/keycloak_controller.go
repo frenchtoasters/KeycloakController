@@ -24,6 +24,7 @@ import (
 	"github.com/pkg/errors"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/cluster-api/util/predicates"
 	"sigs.k8s.io/cluster-api/util/record"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -122,8 +123,8 @@ func (r *KeycloakReconciler) reconcile(ctx context.Context, keycloakScope *scope
 	reconcilers := []cloud.Reconciler{
 		realms.New(*keycloakScope),
 		groups.New(*keycloakScope),
-		users.New(*keycloakScope),
 		realmroles.New(*keycloakScope),
+		users.New(*keycloakScope),
 	}
 
 	for _, r := range reconcilers {
@@ -132,6 +133,18 @@ func (r *KeycloakReconciler) reconcile(ctx context.Context, keycloakScope *scope
 			record.Warnf(keycloakScope.Keycloak, "KeycloakReconcile", "Reconcile error - %v", err)
 			return ctrl.Result{}, err
 		}
+	}
+
+	if err := r.Get(ctx, types.NamespacedName{Namespace: keycloakScope.Namespace()}, keycloakScope.Keycloak); err != nil {
+		if apierrors.IsNotFound(err) {
+			return ctrl.Result{}, nil
+		}
+		return ctrl.Result{}, err
+	}
+
+	err := r.Status().Update(ctx, keycloakScope.Keycloak)
+	if err != nil {
+		return ctrl.Result{RequeueAfter: 5 * time.Minute}, err
 	}
 
 	return ctrl.Result{}, nil

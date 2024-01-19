@@ -8,7 +8,6 @@ import (
 func UserTransform(user *appdatv1alpha1.User) gocloak.User {
 	gocloakUser := &gocloak.User{}
 	gocloakUser.Access = user.Access
-	gocloakUser.ID = user.ID
 	gocloakUser.Totp = user.Totp
 	gocloakUser.Email = user.Email
 	gocloakUser.Groups = user.Groups

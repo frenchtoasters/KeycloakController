@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"appdat.jsc.nasa.gov/platform/controllers/mri-keycloak/cloud/services/keycloak/utils"
+	"github.com/Nerzal/gocloak/v13"
 	gokeycloak "github.com/Nerzal/gocloak/v13"
 	"golang.org/x/exp/slices"
 
@@ -31,7 +32,6 @@ func (s *Service) Reconcile(ctx context.Context) error {
 				return fmt.Errorf("error unable to create user: %s", err)
 			}
 			log.Info(fmt.Sprintf("Created user - [%s]", userId))
-			s.users[i].ID = &userId
 			continue
 		}
 
@@ -45,7 +45,40 @@ func (s *Service) Reconcile(ctx context.Context) error {
 			log.Info(fmt.Sprintf("Updating user - [%s]", *user[0].Username))
 			err := s.scope.KeycloakClient.UpdateUser(ctx, s.scope.Token(), s.scope.RealmName(), utils.UserTransform(s.users[i]))
 			if err != nil {
-				return fmt.Errorf("error updating users groups[%s]: %s", *s.users[i].Username, err)
+				return fmt.Errorf("error updating users groups[%s]: %s", *user[0].Username, err)
+			}
+		}
+
+		// Check if roles are up to date for user
+		if s.users[i].RealmRoles != nil {
+			log.Info(fmt.Sprintf("Reconciling realm roles for user [%s]", *user[0].Username))
+			for _, roleName := range *s.users[i].RealmRoles {
+				roleParams := gocloak.GetRoleParams{
+					Search: gocloak.StringP(roleName),
+				}
+				rolePtr, err := s.scope.KeycloakClient.GetRealmRoles(ctx, s.scope.Token(), s.scope.RealmName(), roleParams)
+				if err != nil {
+					return fmt.Errorf("error getting realm role - %s", err)
+				}
+
+				// We do this because the call to GetRealmRoles returns a []*gocloak.Role and to add it we need to have a []gocloak.Role
+				role := []gocloak.Role{
+					{
+						ID:                 rolePtr[0].ID,
+						Name:               rolePtr[0].Name,
+						ScopeParamRequired: rolePtr[0].ScopeParamRequired,
+						Composite:          rolePtr[0].Composite,
+						Composites:         rolePtr[0].Composites,
+						ClientRole:         rolePtr[0].ClientRole,
+						ContainerID:        rolePtr[0].ContainerID,
+						Description:        rolePtr[0].Description,
+						Attributes:         rolePtr[0].Attributes,
+					},
+				}
+				err = s.scope.KeycloakClient.AddRealmRoleToUser(ctx, s.scope.Token(), s.scope.RealmName(), *user[0].ID, role)
+				if err != nil {
+					return fmt.Errorf("error updating users realm roles [%s]: %s", *s.users[i].Username, err)
+				}
 			}
 		}
 	}
@@ -62,9 +95,9 @@ func (s *Service) Reconcile(ctx context.Context) error {
 			return fmt.Errorf("error getting users: %s", err)
 		}
 
-		specUserIds := utils.ParseSpecIds(s.users)
+		specUserNames := utils.ParseSpecNames(s.users)
 		for i := range realmUsers {
-			if slices.Contains(specUserIds, realmUsers[i].ID) {
+			if slices.Contains(specUserNames, realmUsers[i].Username) {
 				continue
 			}
 			err := s.scope.KeycloakClient.DeleteUser(ctx, s.scope.Token(), s.scope.RealmName(), *realmUsers[i].ID)
@@ -76,7 +109,6 @@ func (s *Service) Reconcile(ctx context.Context) error {
 	}
 
 	return nil
-
 }
 
 func (s *Service) Delete(ctx context.Context) error {

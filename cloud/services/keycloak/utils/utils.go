@@ -25,10 +25,10 @@ func ParseSpecGroupIds(groups []*appdatv1alpha1.Group) []string {
 	return ids
 }
 
-func ParseSpecIds(users []*appdatv1alpha1.User) []*string {
+func ParseSpecNames(users []*appdatv1alpha1.User) []*string {
 	ids := []*string{}
 	for i := range users {
-		ids = append(ids, users[i].ID)
+		ids = append(ids, users[i].Username)
 	}
 	return ids
 }
@@ -39,4 +39,13 @@ func ParseUserGroups(groups []*gocloak.Group) []string {
 		names = append(names, *groups[i].Name)
 	}
 	return names
+}
+
+func Contains(userRoles []string, role *string) bool {
+	for _, v := range userRoles {
+		if v == *role {
+			return true
+		}
+	}
+	return false
 }

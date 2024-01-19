@@ -74,7 +74,7 @@ func (s *Service) Reconcile(ctx context.Context) error {
 		return fmt.Errorf("error adding client role composite: %s", err)
 	}
 
-	s.scope.Keycloak.Spec.AdminRole = utils.RoleTransform(adminRoleId[0])
+	s.scope.Keycloak.Status.AdminRole = utils.RoleTransform(adminRoleId[0])
 	log.Info("Admin role composites added")
 
 	return nil

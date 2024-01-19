@@ -10,20 +10,17 @@ metadata:
   name: keycloak-sample
 spec:
   realmName: "test"
-  adminUser:
-    - username: "test"
   # Required field
   managedRealm: true
   groups:
     - name: test
     - name: test2
-  identityProviderRoleMappers: []
-  paused: false
-  roles: []
   users:
     - username: "test-user"
       groups:
         - test
+      realmRoles:
+        - tenant-realm-admin
     - username: "test2-user"
       groups:
         - test2

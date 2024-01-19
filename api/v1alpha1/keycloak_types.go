@@ -116,17 +116,16 @@ type KeycloakSpec struct {
 	RealmName                   string                    `json:"realmName"`
 	ManagedRealm                bool                      `json:"managedRealm"`
 	Users                       []*User                   `json:"users"`
-	Groups                      []*Group                  `json:"groups"`
-	Roles                       []*Role                   `json:"roles"`
-	AdminUsers                  []*User                   `json:"adminUser"`
-	AdminRole                   *Role                     `json:"adminRole"`
-	IdentityProviderRoleMappers []*IdentityProviderMapper `json:"identityProviderRoleMappers"`
-	Paused                      bool                      `json:"paused"`
+	Groups                      []*Group                  `json:"groups,omitempty"`
+	Roles                       []*Role                   `json:"roles,omitempty"`
+	IdentityProviderRoleMappers []*IdentityProviderMapper `json:"identityProviderRoleMappers,omitempty"`
+	Paused                      bool                      `json:"paused,omitempty"`
 }
 
 // KeycloakStatus defines the observed state of Keycloak
 type KeycloakStatus struct {
 	RealmName string `json:"realmName"`
+	AdminRole *Role  `json:"adminRole"`
 }
 
 //+kubebuilder:object:root=true

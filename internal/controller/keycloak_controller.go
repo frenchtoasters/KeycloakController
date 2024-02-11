@@ -166,11 +166,11 @@ func (r *KeycloakReconciler) reconcileDelete(ctx context.Context, keycloakScope 
 		reconcilers = append(reconcilers, realms.New(*keycloakScope))
 	}
 
-	if keycloakScope.Keycloak.Spec.Groups != nil {
+	if keycloakScope.Keycloak.Spec.Groups != nil && !keycloakScope.Keycloak.Spec.ManagedRealm {
 		reconcilers = append(reconcilers, groups.New(*keycloakScope))
 	}
 
-	if keycloakScope.Keycloak.Spec.Users != nil {
+	if keycloakScope.Keycloak.Spec.Users != nil && !keycloakScope.Keycloak.Spec.ManagedRealm {
 		reconcilers = append(reconcilers, users.New(*keycloakScope))
 	}
 

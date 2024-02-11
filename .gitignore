@@ -32,3 +32,6 @@ tilt_config.json
 
 # Build files
 hack/tools/bin/*
+
+# Default creds
+config/default/.env*

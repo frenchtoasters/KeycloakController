@@ -21,7 +21,7 @@ settings = {
     "kubernetes_version": "v1.22.3",
 }
 
-keys = ["KEYCLOAK_B64ENCODED_CREDENTIALS"]
+keys = []
 
 # global settings
 settings.update(read_json(

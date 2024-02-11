@@ -26,9 +26,6 @@ func NewKeycloakScope(ctx context.Context, params KeycloakScopeParams) (*Keycloa
 	if params.Keycloak == nil {
 		return nil, errors.New("failed to generate new scope from nil Keycloak")
 	}
-	if params.Keycloak == nil {
-		return nil, errors.New("failed to generate new scope from nil GCPKeycloak")
-	}
 
 	helper, err := patch.NewHelper(params.Keycloak, params.Client)
 	if err != nil {

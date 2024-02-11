@@ -115,6 +115,9 @@ func (r *KeycloakReconciler) reconcile(ctx context.Context, keycloakScope *scope
 	log := log.FromContext(ctx)
 	log.Info("Reconciling AppdatKeycloak")
 
+	keycloakScope.Keycloak.Status.Ready = false
+	keycloakScope.Keycloak.Status.FailureMessage = Pointer("")
+
 	controllerutil.AddFinalizer(keycloakScope.Keycloak, appdatv1alpha1.KeycloakFinalizer)
 	if err := keycloakScope.PatchObject(); err != nil {
 		return ctrl.Result{}, err
@@ -131,6 +134,7 @@ func (r *KeycloakReconciler) reconcile(ctx context.Context, keycloakScope *scope
 		if err := r.Reconcile(ctx); err != nil {
 			log.Error(err, "Reconcile error")
 			record.Warnf(keycloakScope.Keycloak, "KeycloakReconcile", "Reconcile error - %v", err)
+			keycloakScope.Keycloak.Status.FailureMessage = Pointer(err.Error())
 			return ctrl.Result{}, err
 		}
 	}
@@ -146,6 +150,8 @@ func (r *KeycloakReconciler) reconcile(ctx context.Context, keycloakScope *scope
 	if err != nil {
 		return ctrl.Result{RequeueAfter: 5 * time.Minute}, err
 	}
+
+	keycloakScope.Keycloak.Status.Ready = true
 
 	return ctrl.Result{}, nil
 }

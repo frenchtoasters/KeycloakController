@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"appdat.jsc.nasa.gov/platform/controllers/mri-keycloak/cloud/services/keycloak/utils"
 	"github.com/Nerzal/gocloak/v13"
 	"golang.org/x/exp/slices"
 	"sigs.k8s.io/controller-runtime/pkg/log"
@@ -74,7 +73,6 @@ func (s *Service) Reconcile(ctx context.Context) error {
 		return fmt.Errorf("error adding client role composite: %s", err)
 	}
 
-	s.scope.Keycloak.Status.AdminRole = utils.RoleTransform(adminRoleId[0])
 	log.Info("Admin role composites added")
 
 	return nil

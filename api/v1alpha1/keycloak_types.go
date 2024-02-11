@@ -124,8 +124,15 @@ type KeycloakSpec struct {
 
 // KeycloakStatus defines the observed state of Keycloak
 type KeycloakStatus struct {
-	RealmName string `json:"realmName"`
-	AdminRole *Role  `json:"adminRole"`
+	// Ready denotes that the realm exists.
+	// +optional
+	Ready bool `json:"ready"`
+
+	// FailureMessage will be set in the event that there is a terminal problem
+	// reconciling the Keycloak and will contain a more verbose string suitable
+	// for logging and human consumption.
+	// +optional
+	FailureMessage *string `json:"failureMessage,omitempty"`
 }
 
 //+kubebuilder:object:root=true

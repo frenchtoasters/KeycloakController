@@ -12,7 +12,7 @@ import (
 func (s *Service) Reconcile(ctx context.Context) error {
 	log := log.FromContext(ctx)
 	log.Info("Reconciling realm resources")
-	realm, err := s.scope.KeycloakClient.GetRealm(ctx, s.scope.Token(), s.scope.RealmName())
+	_, err := s.scope.KeycloakClient.GetRealm(ctx, s.scope.Token(), s.scope.RealmName())
 	if err != nil {
 		if err.(*gokeycloak.APIError).Code == 404 {
 			log.Info("Realm not found creating new realm")
@@ -27,7 +27,6 @@ func (s *Service) Reconcile(ctx context.Context) error {
 			return fmt.Errorf("error checking for realm: %s", err)
 		}
 	}
-	s.scope.Keycloak.Status.RealmName = *realm.Realm
 	return nil
 
 }

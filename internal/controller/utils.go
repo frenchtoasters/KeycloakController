@@ -19,6 +19,11 @@ type ConfigOwner struct {
 	*unstructured.Unstructured
 }
 
+// Pointer returns the pointer of any type
+func Pointer[T any](t T) *T {
+	return &t
+}
+
 func GetKeycloakAccessToken(clientID, clientSecret, rootURL, realmName string) (string, error) {
 	tokenURL := rootURL + "/realms/" + realmName + "/protocol/openid-connect/token"
 

@@ -229,50 +229,14 @@ spec:
           status:
             description: KeycloakStatus defines the observed state of Keycloak
             properties:
-              adminRole:
-                description: Role is a role
-                properties:
-                  attributes:
-                    additionalProperties:
-                      items:
-                        type: string
-                      type: array
-                    type: object
-                  clientRole:
-                    type: boolean
-                  composite:
-                    type: boolean
-                  composites:
-                    description: CompositesRepresentation represents the composite
-                      roles of a role
-                    properties:
-                      client:
-                        additionalProperties:
-                          items:
-                            type: string
-                          type: array
-                        type: object
-                      realm:
-                        items:
-                          type: string
-                        type: array
-                    type: object
-                  containerId:
-                    type: string
-                  description:
-                    type: string
-                  id:
-                    type: string
-                  name:
-                    type: string
-                  scopeParamRequired:
-                    type: boolean
-                type: object
-              realmName:
+              failureMessage:
+                description: FailureMessage will be set in the event that there is
+                  a terminal problem reconciling the Keycloak and will contain a more
+                  verbose string suitable for logging and human consumption.
                 type: string
-            required:
-            - adminRole
-            - realmName
+              ready:
+                description: Ready denotes that the realm exists.
+                type: boolean
             type: object
         type: object
     served: true

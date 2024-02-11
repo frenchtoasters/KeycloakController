@@ -29,3 +29,6 @@ Dockerfile.cross
 /tilt.d
 tilt-settings.json
 tilt_config.json
+
+# Build files
+./hack/tools/bin/*

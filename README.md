@@ -14,13 +14,18 @@ You’ll need a Kubernetes cluster to run against. You can use [KIND](https://si
 **Note:** Your controller will automatically use the current context in your kubeconfig file (i.e. whatever cluster `kubectl cluster-info` shows).
 
 ### Testing with tilt
-1. Start your tilt instance
+1. Create default creds for secret generation
+```sh
+echo "KEYCLOAK_ADMIN_USER=admin\nKEYCLOAK_ADMIN_PASS=pass" > config/default/.env.keycloak
+```
+
+2. Start your tilt instance
 ```sh
 make tilt-up
 ```
-2. Apply the sample keycloak config to the cluster
+3. Apply the sample keycloak config to the cluster
 ```sh
-k apply -f config/samples/appdat_v1alpha1_keycloak.yaml
+kubectl apply -f config/samples/appdat_v1alpha1_keycloak.yaml
 ```
 
 ### Running on the cluster

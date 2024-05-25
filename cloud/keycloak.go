@@ -9,6 +9,8 @@ import (
 type goKeycloakInterface interface {
 	Realms() Realms
 	Users() Users
+	Groups() Groups
+	RealmRoles() RealmRoles
 }
 
 type Realms interface {
